@@ -1,6 +1,8 @@
 import {Schema, model, Document} from 'mongoose'
+import bcrypt from 'bcrypt'
+import passport, { Passport } from 'passport';
 
-export interface IUSER {
+export interface IUser extends Document{
     email: string,
     password: string
 }
@@ -19,4 +21,18 @@ const userSchema = new Schema({
     }
 });
 
-export default model<IUSER>('User', userSchema);
+userSchema.pre<IUser>('save', async function(next){
+    const user = this;
+    if(!user.isModified('password')) return next();
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(user.password, salt);
+    user.password = hash;
+    next();
+});
+
+userSchema.methods.comparePassword = async function(password: string, password2: string): Promise<boolean> {
+    return await bcrypt.compare(password, password2);
+}
+
+export default model<IUser>('User', userSchema);
