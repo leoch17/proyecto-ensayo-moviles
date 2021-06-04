@@ -4,10 +4,11 @@ import passport, { Passport } from 'passport';
 
 export interface IUser extends Document{
     email: string,
-    password: string
+    password: string,
+    comparePassword: (password: string) => Promise<boolean>
 }
 
-const userSchema = new Schema({
+const userSchema = new Schema<IUser>({
     email: {
         type: String,
         required: true,
@@ -17,7 +18,8 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        
     }
 });
 
@@ -31,8 +33,8 @@ userSchema.pre<IUser>('save', async function(next){
     next();
 });
 
-userSchema.methods.comparePassword = async function(password: string, password2: string): Promise<boolean> {
-    return await bcrypt.compare(password, password2);
+userSchema.methods.comparePassword = async function(password: string): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
 }
 
 export default model<IUser>('User', userSchema);

@@ -24,7 +24,7 @@ const userSchema = new mongoose_1.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
     }
 });
 userSchema.pre('save', function (next) {
@@ -38,9 +38,9 @@ userSchema.pre('save', function (next) {
         next();
     });
 });
-userSchema.methods.comparePassword = function (password, password2) {
+userSchema.methods.comparePassword = function (password) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield bcrypt_1.default.compare(password, password2);
+        return yield bcrypt_1.default.compare(password, this.password);
     });
 };
 exports.default = mongoose_1.model('User', userSchema);
