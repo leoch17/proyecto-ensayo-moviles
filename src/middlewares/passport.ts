@@ -4,7 +4,7 @@ import User from '../models/user'
 
 const opts: StrategyOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.movilesSecret
+    secretOrKey: config.movilesSecret,
 };
 
 export default new Strategy(opts, async (payload, done) => {
